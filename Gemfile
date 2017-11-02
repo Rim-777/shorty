@@ -1,4 +1,4 @@
-ource 'https://rubygems.org'
+source 'https://rubygems.org'
 ruby '2.4.2'
 
 gem 'rack', '~> 1.6.0'
@@ -11,11 +11,11 @@ gem 'pg'
 group :development, :test do
   gem 'rake'
   gem 'grape-cli'
-end
-
-group  :test do
   gem 'rspec'
   gem 'rspec-grape'
+end
+
+group :test do
   gem 'factory_bot'
   gem 'shoulda-matchers'
   gem 'database_cleaner'
