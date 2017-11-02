@@ -4,13 +4,30 @@ RSpec.describe Link, type: :model do
   it {should validate_presence_of(:url)}
 
   describe '.validations' do
+    context 'valid attributes' do
+      context 'shortcode params is given' do
+        it 'saves a new link into the database' do
+          expect {Link.create!(url: 'https://cite-urls', shortcode: 'cute')}
+              .to change(Link, :count).by(1)
+        end
+      end
+
+      context 'shortcode params is blank' do
+        it 'saves a new link into the database' do
+          expect {Link.create!(url: 'https://cite-urls', shortcode: '')}
+              .to change(Link, :count).by(1)
+        end
+      end
+    end
+
     context 'invalid format' do
       let(:message) {'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$'}
 
       it 'raises Link::FormatError with given message' do
-        expect {Link.create(url: 'https://cite-urls', shortcode: 'cut')}
+        expect {Link.create!(url: 'https://cite-urls', shortcode: 'cut')}
             .to raise_error(Link::FormatError, message)
       end
+
     end
 
     context 'shortcode doublicate' do
@@ -18,7 +35,7 @@ RSpec.describe Link, type: :model do
       let(:message) {'The the desired shortcode is already in use'}
 
       it 'raises Link::ExistError with given message' do
-        expect {Link.create(url: 'https://new-links', shortcode: 'cute')}
+        expect {Link.create!(url: 'https://new-links', shortcode: 'cute')}
             .to raise_error(Link::DuplicateError, message)
       end
     end
@@ -50,7 +67,7 @@ RSpec.describe Link, type: :model do
     end
   end
 
-  describe 'private #set_shortcode' do
+  describe 'callback before_validations #set_shortcode' do
     context 'shortcode is not given' do
       let(:link) {build(:link, url: 'https://new-links', shortcode: '')}
 
