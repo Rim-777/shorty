@@ -17,6 +17,10 @@ class Link < ActiveRecord::Base
     end
   end
 
+  def increment_redirect_count!
+    self.redirect_count += 1; save
+  end
+
   private
   def shortcode_correctness
     raise Link::FormatError.new,  format_error_message unless SHORT_FORMAT =~ shortcode

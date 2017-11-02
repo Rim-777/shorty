@@ -69,4 +69,12 @@ RSpec.describe Link, type: :model do
       end
     end
   end
+
+  describe '#increment_redirect_count!' do
+    let!(:link) {create(:link, url: 'https://cite-urls', shortcode: 'cute')}
+    it 'increments redirect count field for the link object' do
+      link.increment_redirect_count!
+      expect(link.redirect_count).to eq 1
+    end
+  end
 end
