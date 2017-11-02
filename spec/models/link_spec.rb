@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe Link, type: :model do
+  it {should validate_presence_of(:url)}
 
   describe '.validations' do
     context 'invalid format' do
@@ -50,12 +51,22 @@ RSpec.describe Link, type: :model do
   end
 
   describe 'private #set_shortcode' do
-    context 'shortcode is not given'
-    let(:link) {build(:link, url: 'https://new-links', shortcode: '')}
+    context 'shortcode is not given' do
+      let(:link) {build(:link, url: 'https://new-links', shortcode: '')}
 
-    it 'generates  a valid shortcode for the given link' do
-      link.save
-      expect(link.shortcode).to match(/^[0-9a-zA-Z_]{6}$/)
+      it 'generates  a valid shortcode for the given link' do
+        link.save
+        expect(link.shortcode).to match(/^[0-9a-zA-Z_]{6}$/)
+      end
+    end
+
+    context 'shortcode is given' do
+      let(:link) {build(:link, url: 'https://new-links', shortcode: 'cute')}
+
+      it "doesn't generate a shortcode for the given link" do
+        link.save
+        expect(link.shortcode).to eq('cute')
+      end
     end
   end
 end
