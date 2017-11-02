@@ -9,6 +9,12 @@ class Link < ActiveRecord::Base
     DuplicateError
   ].each { |exception| self.const_set(exception,  Class.new(ActiveRecord::RecordInvalid)) }
 
+  def self.new_shortcode
+    loop do
+      shortcode = ShortcodeGenerator.generate(6)
+      return shortcode unless self.find_by_shortcode(shortcode)
+    end
+  end
 
   private
   def shortcode_correctness

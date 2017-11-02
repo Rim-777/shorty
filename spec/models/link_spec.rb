@@ -7,7 +7,8 @@ RSpec.describe Link, type: :model do
       let(:message) {'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$'}
 
       it 'raises Link::FormatError with given message' do
-        expect {Link.create(url: 'https://cite-urls', shortcode: 'cut')}.to raise_error(Link::FormatError, message)
+        expect {Link.create(url: 'https://cite-urls', shortcode: 'cut')}
+            .to raise_error(Link::FormatError, message)
       end
     end
 
@@ -16,7 +17,35 @@ RSpec.describe Link, type: :model do
       let(:message) {'The the desired shortcode is already in use'}
 
       it 'raises Link::ExistError with given message' do
-        expect {Link.create(url: 'https://new-links', shortcode: 'cute')}.to raise_error(Link::DuplicateError, message)
+        expect {Link.create(url: 'https://new-links', shortcode: 'cute')}
+            .to raise_error(Link::DuplicateError, message)
+      end
+    end
+  end
+
+  describe '.new_shortcode' do
+    it 'receives generate method for ShortNameGenerator class with given arguments' do
+      expect(ShortcodeGenerator).to receive(:generate).with(6)
+      Link.new_shortcode
+    end
+  end
+
+
+  describe 'private #shortcode_is_unique?' do
+    context 'not unique' do
+      let!(:link) {create(:link, url: 'https://cute-links', shortcode: 'cute')}
+      let(:not_unique_link) {build(:link, url: 'https://new-links', shortcode: 'cute')}
+
+      it 'returns false' do
+        expect(not_unique_link.send(:shortcode_is_unique?)).to eq false
+      end
+    end
+
+    context 'unique' do
+      let!(:link) {create(:link, url: 'https://cute-links', shortcode: 'cute')}
+
+      it 'returns true' do
+        expect(link.send(:shortcode_is_unique?)).to eq true
       end
     end
   end
