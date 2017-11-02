@@ -30,7 +30,6 @@ RSpec.describe Link, type: :model do
     end
   end
 
-
   describe 'private #shortcode_is_unique?' do
     context 'not unique' do
       let!(:link) {create(:link, url: 'https://cute-links', shortcode: 'cute')}
@@ -47,6 +46,16 @@ RSpec.describe Link, type: :model do
       it 'returns true' do
         expect(link.send(:shortcode_is_unique?)).to eq true
       end
+    end
+  end
+
+  describe 'private #set_shortcode' do
+    context 'shortcode is not given'
+    let(:link) {build(:link, url: 'https://new-links', shortcode: '')}
+
+    it 'generates  a valid shortcode for the given link' do
+      link.save
+      expect(link.shortcode).to match(/^[0-9a-zA-Z_]{6}$/)
     end
   end
 end

@@ -1,5 +1,6 @@
 class Link < ActiveRecord::Base
   include Messageable
+  before_validation :set_shortcode
   validates :url, presence: true
   validate :shortcode_correctness
   SHORT_FORMAT = /^[0-9a-zA-Z_]{4,}$/
@@ -20,6 +21,11 @@ class Link < ActiveRecord::Base
   def shortcode_correctness
     raise Link::FormatError.new,  format_error_message unless SHORT_FORMAT =~ shortcode
     raise Link::DuplicateError.new, duplicate_error_message unless shortcode_is_unique?
+  end
+
+  def set_shortcode
+    return unless self.shortcode.blank?
+    self.shortcode = self.class.new_shortcode
   end
 
   def shortcode_is_unique?
