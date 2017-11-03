@@ -5,183 +5,137 @@ describe Api::V1::Links, type: :api do
   describe '/shorten' do
     let(:url) {'https//cute-links.com'}
 
-    context 'shortcode is not given' do
-      context 'POST /v1/shorten' do
-        it 'returns 201 status' do
-          expect(call_api({url: url}).status).to eq(201)
-        end
+    context 'shortcode is blank' do
+      let(:params) {{url: url, shortcode: ''}}
 
-        it 'contains application/json as the Content-Type header' do
-          expect(call_api({url: url}).headers["Content-Type"]).to eq 'application/json'
-        end
+      context 'POST /v1/shorten' do
+        it_behaves_like 'LinkCreate!'
+        it_behaves_like 'Created'
 
         it 'returns a shortcode matched to a given pattern' do
-          expect(JSON.parse(call_api({url: url}).body)['shortcode']).to match(/^[0-9a-zA-Z_]{6}$/)
-        end
-
-        it 'receives generate method for ShortNameGenerator class with given arguments' do
-          expect(Link).to receive(:create!).with(url: url, shortcode: "")
-          call_api({url: url, shortcode: ''})
+          expect(JSON.parse(call_api({url: url}).body)['shortcode'])
+              .to match(/^[0-9a-zA-Z_]{6}$/)
         end
       end
     end
 
-    context 'some shortcode is given' do
-      context 'shortcode is unique' do
-
-        let(:shortcode) {'cute'}
-
-        context 'POST /v1/shorten' do
-
-          it 'returns 201 status' do
-            expect(call_api({url: url, shortcode: shortcode}).status).to eq(201)
-          end
-
-          it 'contains application/json as the Content-Type header' do
-            expect(call_api({url: url, shortcode: shortcode}).headers["Content-Type"]).to eq 'application/json'
-          end
-
-          it 'returns shortcode matched a given pattern' do
-            expect(JSON.parse(call_api({url: url, shortcode: shortcode}).body)['shortcode']).to eq shortcode
-          end
-
-          it 'receives generate method for ShortNameGenerator class with given arguments' do
-            expect(Link).to receive(:create!).with(url: url, shortcode: shortcode)
-            call_api({url: url, shortcode: shortcode})
-          end
-        end
-      end
+    context 'shortcode is given' do
+      let(:params) {{url: url, shortcode: 'cute'}}
 
       context 'shortcode is unique' do
-        let(:shortcode) {'cute'}
         let(:response_body) {{'shortcode' => 'cute'}}
+
         context 'POST /v1/shorten' do
-
-          it 'returns 201 status' do
-            expect(call_api({url: url, shortcode: shortcode}).status).to eq(201)
-          end
-
-          it 'contains application/json as the Content-Type header' do
-            expect(call_api({url: url, shortcode: shortcode}).headers["Content-Type"]).to eq 'application/json'
-          end
-
-          it 'returns shortcode matched a given pattern' do
-            expect(JSON.parse(call_api({url: url, shortcode: shortcode}).body)).to eq response_body
-          end
-
-          it 'receives generate method for ShortNameGenerator class with given arguments' do
-            expect(Link).to receive(:create!).with(url: url, shortcode: shortcode)
-            call_api({url: url, shortcode: shortcode})
-          end
+          it_behaves_like 'LinkCreate!'
+          it_behaves_like 'Created'
+          it_behaves_like 'ResponseBody'
         end
       end
 
       context 'shortcode is not unique' do
         let!(:link) {create(:link, url: 'https//cute-links.com', shortcode: 'cute')}
-
-        let(:shortcode) {'cute'}
-
+        let(:params) {{url: url, shortcode: 'cute'}}
         let(:response_body) {{'error' => 'The the desired shortcode is already in use'}}
 
-        context 'POST /v1/shorten' do
-
-          it 'returns 409 status' do
-            expect(call_api({url: url, shortcode: shortcode}).status).to eq(409)
-          end
-
-          it 'contains application/json as the Content-Type header' do
-            expect(call_api({url: url, shortcode: shortcode}).headers["Content-Type"]).to eq 'application/json'
-          end
-
-          it 'returns shortcode matched a given pattern' do
-            expect(JSON.parse(call_api({url: url, shortcode: shortcode}).body)).to eq response_body
-          end
-
-          it 'receives generate method for ShortNameGenerator class with given arguments' do
-            expect(Link).to receive(:create!).with(url: url, shortcode: shortcode)
-            call_api({url: url, shortcode: shortcode})
-          end
+        it_behaves_like 'Error' do
+          let(:response_code) {409}
         end
       end
 
       context 'shortcode has a forbidden format' do
+        let(:params) {{url: url, shortcode: 'cut'}}
 
-        let(:shortcode) {'cut'}
+        let(:response_body) do
+          {'error' => 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$'}
+        end
 
-        let(:response_body) {{'error' => 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$'}}
-
-        context 'POST /v1/shorten' do
-
-          it 'returns 422 status' do
-            expect(call_api({url: url, shortcode: shortcode}).status).to eq(422)
-          end
-
-          it 'contains application/json as the Content-Type header' do
-            expect(call_api({url: url, shortcode: shortcode}).headers["Content-Type"])
-                .to eq 'application/json'
-          end
-
-          it 'returns shortcode matched a given pattern' do
-            expect(JSON.parse(call_api({url: url, shortcode: shortcode}).body))
-                .to eq response_body
-          end
-
-          it 'receives generate method for ShortNameGenerator class with given arguments' do
-            expect(Link).to receive(:create!).with(url: url, shortcode: shortcode)
-            call_api({url: url, shortcode: shortcode})
-          end
+        it_behaves_like 'Error' do
+          let(:response_code) {422}
         end
       end
     end
 
     context 'missing url' do
-      let(:shortcode) {'cute'}
-      let(:url) {''}
-
+      let(:params) {{url: '', shortcode: 'cute'}}
       let(:response_body) {{'error' => "Validation failed: Url can't be blank"}}
 
-      context 'POST /v1/shorten' do
-
-        it 'returns 400 status' do
-          expect(call_api({url: url, shortcode: shortcode}).status).to eq(400)
-        end
-
-        it 'contains application/json as the Content-Type header' do
-          expect(call_api({url: url, shortcode: shortcode}).headers["Content-Type"])
-              .to eq 'application/json'
-        end
-
-        it 'returns shortcode matched a given pattern' do
-          expect(JSON.parse(call_api({url: url, shortcode: shortcode}).body))
-              .to eq response_body
-        end
-
-        it 'receives generate method for ShortNameGenerator class with given arguments' do
-          expect(Link).to receive(:create!).with(url: url, shortcode: shortcode)
-          call_api({url: url, shortcode: shortcode})
-        end
+      it_behaves_like 'Error' do
+        let(:response_code) {400}
       end
     end
   end
 
   describe '/shortcode' do
-    let(:shortcode) {'cute'}
+    let(:params) {{shortcode: 'cute'}}
+
     context 'required link exists in the database' do
       let!(:link) {create(:link, url: 'https://cite-urls.com', shortcode: 'cute')}
 
       context 'GET /v1/shortcode' do
 
         it 'returns 302 status' do
-          expect(call_api({shortcode: shortcode}).status).to eq(302)
+          expect(call_api(params).status).to eq(302)
         end
 
-        it 'contains application/json as the Content-Type header' do
-          expect(call_api({shortcode: shortcode}).headers["Content-Type"]).to eq 'application/json'
-        end
+        it_behaves_like 'ContentType'
 
         it 'returns link url as a location header' do
-          expect(call_api({shortcode: shortcode}).headers['Location']).to eq link.url
+          expect(call_api(params).headers['Location']).to eq link.url
         end
+      end
+    end
+
+    context "required link doesn't exists in the database" do
+      let(:response_body) {{'error' => 'The shortcode cannot be found in the system'}}
+
+      context 'GET /v1/shortcode' do
+        it_behaves_like 'RecordNotFound'
+      end
+    end
+  end
+
+  describe '/shortcode/stats' do
+    let(:params) {{shortcode: 'cute'}}
+
+    context 'required link exists in the database' do
+      let!(:link) do
+        create(:link, url: 'https://cite-urls.com', shortcode: 'cute', redirect_count: 2)
+      end
+
+      context 'with the field redirect_count' do
+
+        let(:response_body) do
+          {
+              'start_date' => link.created_at.iso8601,
+              'last_seen_date' => link.updated_at.iso8601,
+              'redirect_count' => 2
+          }
+        end
+
+        it_behaves_like 'ValidShortcodeStats'
+      end
+
+      context 'without the field redirect_count' do
+        let!(:link) do
+          create(:link, url: 'https://cite-urls.com', shortcode: 'cute', redirect_count: 0)
+        end
+
+        let(:response_body) do
+          {
+              'start_date' => link.created_at.iso8601,
+              'last_seen_date' => link.updated_at.iso8601
+          }
+        end
+
+        it_behaves_like 'ValidShortcodeStats'
+      end
+    end
+
+    context "required link doesn't exists in the database" do
+      let(:response_body) {{'error' => 'The shortcode cannot be found in the system'}}
+
+      context 'GET /v1/shortcode/stats' do
+        it_behaves_like 'RecordNotFound'
       end
     end
   end

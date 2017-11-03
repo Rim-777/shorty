@@ -2,6 +2,7 @@ require 'rspec'
 ENV['RACK_ENV'] = 'test'
 require File.expand_path('../../config/app', __FILE__)
 
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 FactoryBot.definition_file_paths << File.join(File.dirname(__FILE__), 'factories')
 FactoryBot.find_definitions
 

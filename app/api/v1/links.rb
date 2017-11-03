@@ -5,6 +5,10 @@ module Api
       format :json
       content_type :json, 'application/json'
 
+      rescue_from ActiveRecord::RecordNotFound do
+        error!('The shortcode cannot be found in the system', 404)
+      end
+
       rescue_from ActiveRecord::RecordInvalid do |error|
         code = case error
                  when Link::DuplicateError
@@ -24,14 +28,13 @@ module Api
 
       resource :shortcode do
         get do
-          link = Link.find_by_shortcode(params[:shortcode])
-          error!('The shortcode cannot be found in the system', 404) unless link
+          link = Link.find_by_shortcode!(params[:shortcode])
           link.increment_redirect_count!
           header('Location', link.url); status(302)
         end
 
         get :stats do
-          Link.find_by_shortcode(params[:shortcode]).try(:stats)
+          Link.find_by_shortcode!(params[:shortcode]).try(:stats)
         end
       end
     end

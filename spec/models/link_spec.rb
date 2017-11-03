@@ -31,7 +31,7 @@ RSpec.describe Link, type: :model do
     end
 
     context 'shortcode doublicate' do
-      let!(:link) {create(:link, url: 'https://cite-links', shortcode: 'cute')}
+      let!(:link) {create(:link)}
       let(:message) {'The the desired shortcode is already in use'}
 
       it 'raises Link::ExistError with given message' do
@@ -50,7 +50,7 @@ RSpec.describe Link, type: :model do
 
   describe 'private #shortcode_is_unique?' do
     context 'not unique' do
-      let!(:link) {create(:link, url: 'https://cute-links', shortcode: 'cute')}
+      let!(:link) {create(:link)}
       let(:not_unique_link) {build(:link, url: 'https://new-links', shortcode: 'cute')}
 
       it 'returns false' do
@@ -59,7 +59,7 @@ RSpec.describe Link, type: :model do
     end
 
     context 'unique' do
-      let!(:link) {create(:link, url: 'https://cute-links', shortcode: 'cute')}
+      let!(:link) {create(:link)}
 
       it 'returns true' do
         expect(link.send(:shortcode_is_unique?)).to eq true
@@ -88,10 +88,61 @@ RSpec.describe Link, type: :model do
   end
 
   describe '#increment_redirect_count!' do
-    let!(:link) {create(:link, url: 'https://cite-urls', shortcode: 'cute')}
+    let!(:link) {create(:link)}
     it 'increments redirect count field for the link object' do
       link.increment_redirect_count!
       expect(link.redirect_count).to eq 1
+    end
+  end
+
+  describe '#stats' do
+    context 'redirect_count > 0' do
+      let!(:link) {  create(:link, redirect_count: 2)}
+
+      it 'returns hash' do
+        expect(link.stats).to be_a(Hash)
+      end
+
+      it 'contains 3 key/value pairs' do
+        expect(link.stats.size).to eq 3
+      end
+
+      it 'includes the start_date' do
+        expect(link.stats[:start_date]).to eq link.created_at.iso8601
+      end
+
+      it 'includes the last_seen_date' do
+        expect(link.stats[:last_seen_date]).to eq link.updated_at.iso8601
+      end
+
+      it 'includes the redirect_count' do
+        expect(link.stats[:redirect_count]).to eq 2
+      end
+    end
+
+
+    context 'redirect_count == 0' do
+      let!(:link) { create(:link)}
+
+      it 'returns hash' do
+        expect(link.stats).to be_a(Hash)
+      end
+
+      it 'contains 2 key/value pairs' do
+        expect(link.stats.size).to eq 2
+      end
+
+      it 'includes the start_date' do
+        expect(link.stats[:start_date]).to eq link.created_at.iso8601
+      end
+
+      it 'includes the last_seen_date' do
+        expect(link.stats[:last_seen_date]).to eq link.updated_at.iso8601
+      end
+
+      it "doesn't includ the redirect_count" do
+        expect(link.stats[:redirect_count]).to be_nil
+      end
     end
   end
 end
