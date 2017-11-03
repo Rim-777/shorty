@@ -163,4 +163,26 @@ describe Api::V1::Links, type: :api do
       end
     end
   end
+
+  describe '/shortcode' do
+    let(:shortcode) {'cute'}
+    context 'required link exists in the database' do
+      let!(:link) {create(:link, url: 'https://cite-urls.com', shortcode: 'cute')}
+
+      context 'GET /v1/shortcode' do
+
+        it 'returns 302 status' do
+          expect(call_api({shortcode: shortcode}).status).to eq(302)
+        end
+
+        it 'contains application/json as the Content-Type header' do
+          expect(call_api({shortcode: shortcode}).headers["Content-Type"]).to eq 'application/json'
+        end
+
+        it 'returns link url as a location header' do
+          expect(call_api({shortcode: shortcode}).headers['Location']).to eq link.url
+        end
+      end
+    end
+  end
 end

@@ -21,6 +21,19 @@ module Api
       post :shorten do
         {shortcode: Link.create!(url: params[:url], shortcode: params[:shortcode]).try(:shortcode)}
       end
+
+      resource :shortcode do
+        get do
+          link = Link.find_by_shortcode(params[:shortcode])
+          error!('The shortcode cannot be found in the system', 404) unless link
+          link.increment_redirect_count!
+          header('Location', link.url); status(302)
+        end
+
+        get :stats do
+          Link.find_by_shortcode(params[:shortcode]).try(:stats)
+        end
+      end
     end
   end
 end
