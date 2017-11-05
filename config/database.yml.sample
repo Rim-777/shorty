@@ -1,6 +1,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  host: db
+  username: postgres
+  password:
+  port: 5432
   pool:  5
 
 development:
@@ -10,4 +14,3 @@ development:
 test:
   <<: *default
   database: cute_urls_test
-

@@ -23,7 +23,7 @@ module Api
       end
 
       post :shorten do
-        {shortcode: Link.create!(url: params[:url], shortcode: params[:shortcode]).try(:shortcode)}
+        {shortcode: Link.create!(url: params[:url], shortcode: params[:shortcode]).shortcode}
       end
 
       resource :shortcode do
@@ -34,7 +34,7 @@ module Api
         end
 
         get :stats do
-          Link.find_by_shortcode!(params[:shortcode]).try(:stats)
+          Link.find_by_shortcode!(params[:shortcode]).stats
         end
       end
     end

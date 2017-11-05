@@ -10,5 +10,4 @@ shared_examples_for 'ValidShortcodeStats' do
 
     it_behaves_like 'ResponseBody'
   end
-
 end

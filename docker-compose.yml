@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    expose:
+      - 5432
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD:
+      DB_HOST: localhost
+    links:
+      - db
+    command: bundle exec rackup -p 3000 --host 0.0.0.0

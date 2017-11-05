@@ -27,7 +27,6 @@ RSpec.describe Link, type: :model do
         expect {Link.create!(url: 'https://cite-urls', shortcode: 'cut')}
             .to raise_error(Link::FormatError, message)
       end
-
     end
 
     context 'shortcode doublicate' do
@@ -119,7 +118,6 @@ RSpec.describe Link, type: :model do
         expect(link.stats[:redirect_count]).to eq 2
       end
     end
-
 
     context 'redirect_count == 0' do
       let!(:link) { create(:link)}

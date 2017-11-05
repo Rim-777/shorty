@@ -5,7 +5,5 @@ shared_examples_for 'RecordNotFound' do
   end
 
   it_behaves_like 'ContentType'
-
   it_behaves_like 'ResponseBody'
-
 end
