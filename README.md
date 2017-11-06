@@ -1,18 +1,24 @@
-## Introduction
-
-Cute-Urls. - Ruby Grape application for REST API with ActiveRecord, RSpec
-
-## Dependencies:
+## Cute-Urls
+Ruby Grape application for REST API with ActiveRecord, RSpec, Swagger
+### Description:
+The application receives  URLs(string) and creates shortened links.
+### Dependencies:
 - Ruby 2.4.2
 - PostgreSQL
 
-## Using Docker:
+### Installation:
+
+###  Using Docker:
+To create the database.yml please run  the following script:
+```shell
+$ cp config/database.yml.example config/database.yml
+```
 
 To run application on docker:
 
-- Install Docker and Docker-Compose
+- Please install Docker and Docker-Compose
 - Clone the project
-- Run these commands on project root:
+- Run following commands on project root:
 
 ```shell
 $ docker-compose build
@@ -22,14 +28,64 @@ $ docker-compose up
 $ docker-compose run web bundle exec rake db:create db:migrate
 ```
 
-## Tests:
+##### Tests:
 
 To execute tests, run following commands:
  
 ```shell
+ $ docker-compose run web bundle exec rake db:migrate RACK_ENV=test #(the first time only)
  $ docker-compose run web bundle exec rspec
 ```
+### Regular Installation:
+- Clone poject
+- Run bundler:
 
-## License
+ ```shell
+ $ bundle install
+ ```
+Create database.yml:
+```shell
+$ cp config/database.yml.example config/database.yml
+```
+##### Important: 
+Before the next step please change host in config/database.yml from db to your_host_url
+- Create database and run migrations:
+
+ ```shell
+ $ bundle exec rake db:create db:migrate
+ ```
+ 
+- Run application:
+
+ ```shell
+ $ rackup -p 3000
+ ```
+
+##### Tests:
+
+To execute tests, run following commands:
+ 
+```shell
+ $ bundle exec rake db:migrate RACK_ENV=test #(the first time only)
+ $ bundle exec rspec
+```
+### Swagger Documentation
+
+Enter the root application address in the browser:
+
+```shell
+http://localhost:3000
+```
+
+### Explanation of the Approach:
+To avoid any excessive complexity I used DBMS PostgreSQL.
+My opinion - PostgreSQL is the classic solution and it should be enough for long time.
+In the future(if necessary), we can make the following optimization:
+* Use Redis to the cache storring (it will make  the uniqueness checking process faster).
+* If we don't need the absolute accuracy of the redirects number, we can move increment to the background job. 
+* In case if the 'Links' - table becames huge we can use some full-text search engine such as Elasticsearch or Sphinx. 
+But now it would be overkill.
+
+### License
 
 The software is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

@@ -12,7 +12,7 @@ describe Api::V1::Links, type: :api do
         it_behaves_like 'LinkCreate!'
         it_behaves_like 'Created'
 
-        it 'returns a shortcode matched to a given pattern' do
+        it 'returns a shortcode matched to the given pattern' do
           expect(JSON.parse(call_api({url: url}).body)['shortcode'])
               .to match(/^[0-9a-zA-Z_]{6}$/)
         end

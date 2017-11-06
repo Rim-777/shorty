@@ -7,6 +7,7 @@ gem 'puma'
 gem 'activerecord', '~> 5.0.2', require: 'active_record'
 gem 'otr-activerecord', '~> 1.2.1'
 gem 'pg'
+gem 'grape-swagger', '~> 0.10.4'
 
 group :development, :test do
   gem 'rake'
