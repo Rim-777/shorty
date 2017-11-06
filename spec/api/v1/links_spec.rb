@@ -8,7 +8,7 @@ describe Api::V1::Links, type: :api do
     context 'shortcode is blank' do
       let(:params) {{url: url, shortcode: ''}}
 
-      context 'POST /v1/shorten' do
+      context 'POST /api/v1/shorten' do
         it_behaves_like 'LinkCreate!'
         it_behaves_like 'Created'
 
@@ -25,7 +25,7 @@ describe Api::V1::Links, type: :api do
       context 'shortcode is unique' do
         let(:response_body) {{'shortcode' => 'cute'}}
 
-        context 'POST /v1/shorten' do
+        context 'POST /api/v1/shorten' do
           it_behaves_like 'LinkCreate!'
           it_behaves_like 'Created'
           it_behaves_like 'ResponseBody'
@@ -65,13 +65,13 @@ describe Api::V1::Links, type: :api do
     end
   end
 
-  describe '/shortcode' do
+  describe 'shortcode' do
     let(:params) {{shortcode: 'cute'}}
 
     context 'required link exists in the database' do
       let!(:link) {create(:link, url: 'https://cite-urls.com', shortcode: 'cute')}
 
-      context 'GET /v1/shortcode' do
+      context 'GET /api/v1/shortcode' do
 
         it 'returns 302 status' do
           expect(call_api(params).status).to eq(302)
@@ -88,7 +88,7 @@ describe Api::V1::Links, type: :api do
     context "required link doesn't exists in the database" do
       let(:response_body) {{'error' => 'The shortcode cannot be found in the system'}}
 
-      context 'GET /v1/shortcode' do
+      context 'GET /api/v1/shortcode' do
         it_behaves_like 'RecordNotFound'
       end
     end
@@ -134,7 +134,7 @@ describe Api::V1::Links, type: :api do
     context "required link doesn't exists in the database" do
       let(:response_body) {{'error' => 'The shortcode cannot be found in the system'}}
 
-      context 'GET /v1/shortcode/stats' do
+      context 'GET /api/v1/shortcode/stats' do
         it_behaves_like 'RecordNotFound'
       end
     end
