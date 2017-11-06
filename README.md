@@ -9,16 +9,16 @@ The application receives  URLs(string) and creates shortened links.
 ### Installation:
 
 ###  Using Docker:
-To create the database.yml please run  the following script:
-```shell
-$ cp config/database.yml.example config/database.yml
-```
-
 To run application on docker:
 
 - Please install Docker and Docker-Compose
 - Clone the project
-- Run following commands on project root:
+
+- To create the database.yml please run  the following script on the project root:
+```shell
+$ cp config/database.yml.example config/database.yml
+```
+- Run following commands on the project root:
 
 ```shell
 $ docker-compose build
@@ -48,7 +48,7 @@ Create database.yml:
 $ cp config/database.yml.example config/database.yml
 ```
 ##### Important: 
-Before the next step please change host in config/database.yml from db to your_host_url
+Before the next step please change the host value in config/database.yml from `db` to `your_host_url`
 - Create database and run migrations:
 
  ```shell
@@ -81,7 +81,7 @@ http://localhost:3000
 To avoid any excessive complexity I used DBMS PostgreSQL.
 My opinion - PostgreSQL is the classic solution and it should be enough for long time.
 In the future(if necessary), we can make the following optimization:
-* Use Redis to the cache storage (it will make  the uniqueness checking process faster).
+* Use Redis for the cache storage (it will make  the uniqueness checking process faster).
 * If we don't need the absolute accuracy of the redirects number, we can move increment to the background job. 
 * In case if the 'Links' - table becames huge we can use some full-text search engine such as Elasticsearch or Sphinx. 
 But now it would be overkill.
