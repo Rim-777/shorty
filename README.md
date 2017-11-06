@@ -81,7 +81,7 @@ http://localhost:3000
 To avoid any excessive complexity I used DBMS PostgreSQL.
 My opinion - PostgreSQL is the classic solution and it should be enough for long time.
 In the future(if necessary), we can make the following optimization:
-* Use Redis to the cache storring (it will make  the uniqueness checking process faster).
+* Use Redis to the cache storage (it will make  the uniqueness checking process faster).
 * If we don't need the absolute accuracy of the redirects number, we can move increment to the background job. 
 * In case if the 'Links' - table becames huge we can use some full-text search engine such as Elasticsearch or Sphinx. 
 But now it would be overkill.
