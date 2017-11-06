@@ -1,4 +1,4 @@
-## Cute-Urls
+## Shorty Or Cute-Urls(my version)
 Ruby Grape application for REST API with ActiveRecord, RSpec, Swagger
 ### Description:
 The application receives  URLs(string) and creates shortened links.
